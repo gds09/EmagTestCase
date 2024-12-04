@@ -1,0 +1,74 @@
+public class EmagTesting {
+
+    WebDriver driver;
+    String url = "https://www.emag.ro/";
+
+    @BeforeTest
+    public void BrowserSetup() {
+
+        System.out.println("Initiating the Test");
+
+        String pathChromeDriver = "d:\\chromedriver-win64/chromedriver.exe";
+        System.setProperty("webdriver.chrome.driver", pathChromeDriver);
+
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--remote-allow-origins=*");
+
+        driver = new ChromeDriver(options);
+        driver.manage().window().maximize();
+    }
+
+    @Test(priority = 1)
+    public void OpenTheWebSite() {
+        driver.get(url);
+        String CurrentURL = driver.getCurrentUrl();
+        Assert.assertEquals(url,CurrentURL);
+    }
+    @Test(priority = 2)
+    public void SelectCategory(){
+        WebElement ProductsCategory = driver.findElement(By.xpath(("//li[@data-id ='1']")));
+        Actions actions = new Actions(driver);
+        actions.moveToElement(ProductsCategory).perform();
+        driver.manage().timeouts().implicitlyWait(2, TimeUnit.SECONDS);
+        WebElement VerifyCategory = driver.findElement(By.xpath("//a[@href ='/laptopuri-accesorii/sd?ref=hp_menu_quick-nav_1_0&type=subdepartment']"));
+        Assert.assertTrue(VerifyCategory.isDisplayed());
+        WebElement LaptopsCategory = driver.findElement(By.xpath("//a[@data-id='4283']"));
+        LaptopsCategory.click();
+        WebElement VerifyLaptopsCategory = driver.findElement(By.xpath("//h1[text() ='Laptopuri']"));
+        Assert.assertTrue(VerifyLaptopsCategory.isDisplayed());
+    }
+
+    @Test(priority = 3)
+    public void FilterTheLaptops(){
+        WebElement LaptopsPrice = driver.findElement(By.xpath("//a[@href = 'https://www.emag.ro/laptopuri/pret,intre-1000-si-1500/c?ref=lst_leftbar_6411_1000-1500']"));
+        LaptopsPrice.click();
+        WebElement VerifyLaptopsPrice = driver.findElement(By.xpath("//h1[text()='Laptopuri - Pret: 1.000 - 1.500']"));
+        Assert.assertTrue(VerifyLaptopsPrice.isDisplayed());
+    }
+
+    @Test (priority = 4)
+    public void SelectLaptopSSD(){
+        WebElement LaptopsPage = driver.findElement(By.xpath("//a[text()[contains(.,'cu procesor Intel® Celeron® N4120, Windows 11 Pro, 8GB RAM, 512GB SSD, 1920*1080 Full HD, Intel® UHD Graphics 600, Argintiu')]]"));
+        LaptopsPage.click();
+        WebElement LaptopImg = driver.findElement(By.xpath("//img[@src='https://s13emagst.akamaized.net/products/65458/65457027/images/res_228898fa6b9ef4f38819dae03254e463.jpg?width=720&height=720&hash=D5C5F6892E27D20EB18E523516D01367']"));
+        Assert.assertTrue(LaptopImg.isDisplayed());
+        WebElement SSDOption = driver.findElement(By.xpath("//div[text()='256 GB']"));
+        SSDOption.click();
+        WebElement SSDOptionCheck = driver.findElement(By.xpath("//span[text()[contains(.,'256GB')]]"));
+        Assert.assertTrue(SSDOptionCheck.isDisplayed());
+    }
+
+    @Test(priority = 5)
+    public void AddToFavoriteList(){
+        WebElement AddButton = driver.findElement(By.xpath("//span[@class='gtm_t95ovv']"));
+        AddButton.click();
+        WebElement FavoriteButtonActive = driver.findElement(By.xpath("//button[@class='add-to-favorites btn btn-xl btn-default btn-icon btn-block gtm_t95ovv border-lg add-to-favorites-active']"));
+        Assert.assertTrue(FavoriteButtonActive.isDisplayed());
+    }
+
+    @AfterTest
+    public void CloseTheBrowser(){
+        System.out.println("The testcase steps were executed. Closing the browser..");
+        driver.close();
+    }
+}
